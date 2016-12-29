@@ -1,0 +1,14 @@
+<App>
+
+  <Router ux:Name="router" BackButtonAction="GoBack" />
+  <ClientPanel>
+    <Navigator DefaultTemplate="login">
+      <LoginScreen ux:Template="login" router="router"/>
+      <HomePage ux:Template="home" router="router" />
+      <CreateUser ux:Template="createuser" router="router" />
+      <CreateItem ux:Template="createitem" router="router" />
+      <UpdateItem ux:Template="updateitem" router="router" />
+    </Navigator>
+
+  </ClientPanel>
+</App>

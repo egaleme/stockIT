@@ -1,0 +1,34 @@
+	<Panel ux:Class="UpdateItem" Color="#18f" >
+		<Router ux:Dependency="router" />
+		
+  <JavaScript File="updateitem.js" />
+  <DockPanel>
+    <DockPanel Dock="Top" Color="#127799">
+      <Panel Height="48">
+        <Text TextColor="White" Value="Edit Product" Alignment="Center"  />
+        <Image File="../Assets/directionLeft.png" Clicked="{goBack}" Alignment="Left" />
+      </Panel>
+    </DockPanel>
+    <ScrollView>
+        <StackPanel Margin="20" >
+
+        <ProductInput PlaceholderText="Product name" Value="{name}" />
+        <HorizontalLine />
+        <ProductInput PlaceholderText="Batch no" Value="{batchno}" />
+        <HorizontalLine />
+        <ProductInput PlaceholderText="Expiring date (yyyy-mm-dd)" Value="{expiringdate}" />
+        <HorizontalLine />
+        <ProductInput PlaceholderText="Price (format: 2500.50)" Value="{price}" />
+        <HorizontalLine />
+        <ProductInput PlaceholderText="Quantity" Value="{quantity}" />
+        <HorizontalLine />
+        <Panel Alignment="VerticalCenter" >
+          <Rectangle Clicked="{updateProduct}" CornerRadius="80" Fill="#127799" Width="100" Height="40" Margin="10,50" >
+            <Text TextColor="#ffffff" Alignment="Center">Edit</Text>
+          </Rectangle>
+        </Panel>
+      </StackPanel>
+    </ScrollView>
+  </DockPanel>
+
+</Panel>

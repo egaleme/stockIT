@@ -1,0 +1,85 @@
+<Panel ux:Class="CreateUser" Background="#18f" >
+
+    <Router ux:Dependency="router" />
+    <Rectangle ux:Class="HorizontalLine" Color="#ffffff80"  Height="1" />
+    <TextInput ux:Class="WhiteTextInput" Alignment="Center" TextColor="White" Margin="10" PlaceholderColor="#ffffff80" />
+    <JavaScript>
+    var API_URL = require("Modules/api.js")
+    var Observable = require("FuseJS/Observable");
+    var username = Observable();
+    var password = Observable();
+    var firstname = Observable();
+    var lastname = Observable();
+    var email = Observable();
+    var err = Observable();
+
+      function goBack() {
+        err.value = ""
+        router.goBack()
+      }
+
+      function createUser() {
+        fetch(`${API_URL}/users`, {
+          method: 'post',
+          mode: 'cors',
+          credentials: 'same-origin',
+          headers: new Headers({'Content-Type': 'application/json'}),
+          body: JSON.stringify({email: email.value,username: username.value, password: password.value, firstname: firstname.value, lastname: lastname.value})
+
+        }).
+        then(function(response) {
+          if (response.ok) {
+            return response.json()
+          } else {
+            throw new Error("Please make sure all fields are filled !")
+          }
+        }).
+        then(function(data) {
+          username.value=""
+          firstname.value=""
+          lastname.value=""
+          password.value=""
+          email.value = ""
+          err.value = ""
+          router.push("home", data.username)
+        }).
+        catch(function(error) {
+          err.value = error.message
+        })
+
+      };
+      module.exports = {goBack, err, createUser, email, username, firstname, lastname, password}
+    </JavaScript>
+    <DockPanel>
+      <DockPanel Dock="Top" Color="#18f" >
+        <StatusBarBackground Dock="Top" />
+        <Panel Height="48">
+          <Text Color="White" Value="Create User" Alignment="Center" FontSize="20" />
+
+          <Image File="../Assets/arrow.png" Alignment="Left" Clicked="{goBack}" />
+        </Panel>
+      </DockPanel>
+
+
+      <StackPanel Alignment="Top" Margin="20" >
+        <Text TextColor="Red" Value="{err}" />
+        <WhiteTextInput PlaceholderText="Firstname" Value="{firstname}" />
+        <HorizontalLine />
+        <WhiteTextInput PlaceholderText="Lastname" Value="{lastname}" />
+        <HorizontalLine />
+        <WhiteTextInput PlaceholderText="Username" Value="{username}" />
+        <HorizontalLine />
+        <WhiteTextInput PlaceholderText="Email"  Value="{email}" />
+        <HorizontalLine />
+        <WhiteTextInput PlaceholderText="Password" IsPassword="true" Value="{password}" />
+        <HorizontalLine />
+        <Panel Alignment="VerticalCenter" >
+          <Rectangle Clicked="{createUser}" CornerRadius="80" Fill="#127799" Width="100" Height="40" Margin="10,50" >
+            <Text TextColor="#ffffff" Alignment="Center">Sign Up</Text>
+          </Rectangle>
+        </Panel>
+      </StackPanel>
+
+    </DockPanel>
+
+</Panel>

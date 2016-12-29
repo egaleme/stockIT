@@ -1,0 +1,76 @@
+<Panel ux:Class="HomePage" Color="#fff" >
+  <Text ux:Class="ProductText" TextColor="#fff" />
+
+  <Router ux:Dependency="router"  />
+  <JavaScript File="home.js" />
+
+  <DockPanel>
+    <Panel Dock="Top" Color="#127799" Height="48">
+      <ProductText Value="Products List" Alignment="Center" />
+      <Image File="../Assets/directionLeft.png" Clicked="{logout}" Alignment="Left" />
+      <Circle ux:Name="expire" Clicked="{createItem}" Width="40" Height="40"  Fill="#b2ccf8" Margin="10" Alignment="CenterRight">
+        <Panel ux:Name="cross">
+          <Rectangle Width="30%" Height="4" Fill="#fff" />
+          <Rectangle Height="30%" Width="4" Fill="#fff" />
+        </Panel>
+      </Circle>
+    </Panel>
+
+      <Grid ColumnCount="1" Dock="Top" Height="60" Margin="10"  Padding="2" RowCount="2" >
+        <Text TextColor="#127799"  Alignment="Center" Value="{totalAmount}" FontSize="14" />
+        <Text TextColor="#127799"  Alignment="Center"  Value="{todaysDate}" FontSize="14" />
+        <Rectangle CornerRadius="13" Fill="#b2ccf8" Layer="Background" Opacity="0.7" />
+      </Grid>
+    <ScrollView LayoutMode="PreserveVisual">
+      <StackPanel>
+        <Each Items="{products}">
+          <Panel>
+            <Deferred>
+              <Seperator Color="#c7cfce" Alignment="Bottom" Width="100%" Opacity="0.7" />
+              <DockPanel >
+                <Circle Width="60" Height="60" Dock="Left" Color="{expireTracker}" Margin="10,0,10,0" >
+                  <Panel>
+                    <Text TextColor="#fff" Alignment="Center" Value="{quantity}"/>
+                  </Panel>
+                </Circle>
+                <Grid ColumnCount="2" RowCount="5"  Margin="12"  >
+                  <Text Value="Name:" Row="0" Column="0" />
+                  <Text Value="Batch no:" Row="1" Column="0" />
+                  <Text Value="=N=:" Row="2" Column="0" />
+
+                  <Text Value="{name}" Row="0" Column="1"/>
+                  <Text Value="{batchno}" Row="1" Column="1"/>
+                  <Text  Value="{price}" Row="2" Column="1" />
+                  <Text Value="{bb}" Row="3" Alignment="CenterLeft"/>
+                  <Panel Row="4" Column="1">
+                    <Grid Columns="1*,1*">
+                        <Rectangle HitTestMode="LocalBoundsAndChildren" Margin="10"  CornerRadius="100" Fill="#b37f59" Width="40" Height="20">
+                          <Clicked Handler="{updateProduct}" />
+                          <Text TextColor="#ffffff" FontSize="10" Alignment="Center">Edit</Text>
+                       </Rectangle>
+                       <Rectangle HitTestMode="LocalBoundsAndChildren" Margin="10" CornerRadius="100" Fill="Red" Width="40" Height="20">
+                        <Clicked Handler="{deleteProduct}" />
+                          <Text TextColor="#ffffff" FontSize="10" Alignment="Center">Delete</Text>
+                       </Rectangle>
+                      </Grid>
+                  </Panel>
+                </Grid>
+                  <LayoutAnimation>
+  							    <Move RelativeTo="LayoutChange" Y="1" Duration="0.8" Easing="ElasticIn" />
+  						    </LayoutAnimation>
+
+    						<AddingAnimation>
+    							<Move RelativeTo="Size" X="1" Duration="0.3" Easing="CircularIn" />
+    						</AddingAnimation>
+
+    						<RemovingAnimation>
+    							<Move RelativeTo="Size" X="-1" Duration="0.4" Easing="CircularOut" />
+    						</RemovingAnimation>
+              </DockPanel>
+            </Deferred>
+          </Panel>
+        </Each>
+      </StackPanel>
+    </ScrollView>
+  </DockPanel>
+</Panel>
