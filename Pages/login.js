@@ -1,5 +1,4 @@
 var Context = require('Modules/Context')
-var API_URL = require('Modules/api')
 
 var Observable = require("FuseJS/Observable");
 var username = Observable();
@@ -14,14 +13,6 @@ function startShowing() {
 
 function login() {
   Context.login(username.value, password.value).
-  then(function(data) {
-    username.value = ''
-    password.value = ''
-    Context.user.value = data.username
-    router.push('home')
-  })
-	/*
-  Context.login(username.value, password.value).
 	then(function(response) {
         if (response.ok) {
           return response.json()
@@ -32,25 +23,17 @@ function login() {
         }
       }).
       then(function(data) {
-        uid.value = data.uid
-        fetch(`${API_URL}/users/${uid.value}`, {
-          method: 'get'
-        }).
-        then(function(response) {
-          return response.json()
-        }).
-        then(function(data) {
-          username.value=""
-          password.value=""
-          err.value= ""
-					Context.user.value = data.username
-					router.push('home')
-        });
-      }).
-      catch(function(error) {
-        err.value = error.message
-      });
-*/
+        username.value = ''
+        password.value = ''
+       Context.user.value = data.data[0].user_id
+       Context.accessToken.value = data.data[0].access_token
+       Context.getProducts()
+       router.push("home")
+     })
+    .catch(function(error) {
+     err.value = error.message
+    })
+
 
 }
 

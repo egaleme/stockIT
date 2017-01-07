@@ -1,14 +1,13 @@
 var Observable = require('FuseJS/Observable')
 var API_URL = require('./api')
-var Backend = require('./Backend')
-
 
 var products = Observable()
 var totalAmount = Observable()
 var total = Observable(0)
 var user = Observable()
 var item = Observable()
-
+var accessToken = Observable()
+var store = Observable()
 
 function expireTracker(datestring) {
     var color
@@ -49,17 +48,22 @@ function expireTracker(datestring) {
 }
 
 
-function getProducts(owner) {
+function getProducts() {
   total.value = 0
-  
-  Backend.getProducts(owner).
+ fetch(API_URL+'/products?access_token='+accessToken.value, {
+  method: 'get'
+}).
+  then(function (response) {
+    return response.json()
+  }).
   then(function(data) {
-    for (var i = 0; i < data.length; i++) {
-       total.value = (total.value + (data[i].price * data[i].quantity))
+    store.replaceAll(data.data)
+    for (var i = 0; i < data.data.length; i++) {
+       total.value = (total.value + (data.data[i].price * data.data[i].quantity))
        
      }
        totalAmount.value = " Total Current Stock: =N= "+ total.value.toFixed(2)
-       data.forEach(function(product) {     
+       store.forEach(function(product) {     
        product.expireTracker = Observable()
        product.bb = Observable()
        product.bb.value = "BB : "+ product.expiringdate
@@ -70,30 +74,7 @@ function getProducts(owner) {
        catch(function(error) {
         console.log('can not load products')
      })
- /* fetch(API_URL+'/products?owner='+owner, {
-  method: 'get'
-}).
-  then(function (response) {
-    return response.json()
-  }).
-  then(function (data) {
 
-      for (var i = 0; i < data.length; i++) {
-       total.value = (total.value + (data[i].price * data[i].quantity))
-       
-     }
-       totalAmount.value = " Total Current Stock: =N= "+ total.value.toFixed(2)
-       data.forEach(function(product) {     
-       product.expireTracker = Observable()
-       product.expireTracker.value = expireTracker(product.expiringdate)
-       products.add(product)
-
-     })
-  }).
-  catch(function (error) {
-     console.log("Couldn't get products: " + error)
-  })
-*/
 }
 
 function renderDateString(datestring) {
@@ -108,14 +89,14 @@ function renderDateString(datestring) {
 function createProduct (name, batchno, qty, expiringdate, price) {
   total.value = 0
   var productbb = "BB : "+ renderDateString(expiringdate)
-	products.add({name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, owner: user.value, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
-/*
-      fetch(`${API_URL}/products`, {
+	products.add({name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, user_id: user.value, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
+
+      fetch(`${API_URL}/products?access_token=${accessToken.value}`, {
         method: 'post',
         mode: 'cors',
         credentials: 'same-origin',
         headers: new Headers({'Content-Type': 'application/json'}),
-        body: JSON.stringify({owner:user.value, name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: qty})
+        body: JSON.stringify({name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: qty})
       }).
       then(function(response) {
         if (response.ok) {
@@ -130,7 +111,7 @@ function createProduct (name, batchno, qty, expiringdate, price) {
         console.log('couldnt save product');
 
       })
-*/
+
   products.forEach(function(product) {
     total.value = (total.value + (product.price * product.quantity))
    
@@ -149,20 +130,20 @@ function updateProduct(id, name, batchno, quantity, expiringdate, price, owner) 
             product.quantity= quantity;
             product.expiringdate = renderDateString(expiringdate);
             product.price = price;
-            product.owner = owner;
+            product.user_id = owner;
             product.bb = "BB : "+ product.expiringdate
             product.expireTracker = expireTracker(expiringdate);
             products.replaceAt(i, product);
             break;
         }
     }
- /*
-      fetch(`${API_URL}/products/${id}`, {
+
+      fetch(`${API_URL}/products/${id}?access_token=${accessToken.value}`, {
         method: 'put',
         mode: 'cors',
         credentials: 'same-origin',
         headers: new Headers({'Content-Type': 'application/json'}),
-        body: JSON.stringify({owner:owner, name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: quantity})
+        body: JSON.stringify({name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: quantity})
       }).
       then(function(response) {
         if (response.ok) {
@@ -177,7 +158,7 @@ function updateProduct(id, name, batchno, quantity, expiringdate, price, owner) 
         console.log('could not update product');
 
       })
-*/
+
   products.forEach(function(product) {
     total.value = (total.value + (product.price * product.quantity))
    
@@ -194,34 +175,33 @@ function deleteProduct(product) {
    
   })
   totalAmount.value = " Total Current Stock Value: =N= "+ total.value.toFixed(2)
-/*
-  return fetch(API_URL+'/products/'+product.id, {
+
+  return fetch(API_URL+'/products/'+product.id+'?access_token='+accessToken.value, {
     method: 'delete',
     mode: 'cors',
     credentials: 'same-origin'
   })
-*/
+
 }
 
 function logout() {
-/*	return fetch(API_URL+'/users/logout', {
-		method: 'post',
+	return fetch(API_URL+'/access_tokens?access_token='+accessToken.value, {
+		method: 'delete',
 		mode: 'cors',
 		credentials: 'same-origin'
 	})
-*/
+
 }
 
 function login(username, password) {
-return  Backend.login(username, password)
- /* return fetch(API_URL+'/users/login', {
+ return fetch(API_URL+'/access_tokens', {
     method: 'post',
     mode: 'cors',
     credentials: 'same-origin',
     headers: new Headers({'Content-Type': 'application/json'}),
-    body: JSON.stringify({username: username, password: password})
+    body: JSON.stringify({username: username, password: password, grant_type: "password"})
   })
-*/
+
 }
 
 module.exports = {
@@ -235,7 +215,8 @@ module.exports = {
   user: user,
   item: item,
   deleteProduct: deleteProduct,
-  total: total
+  total: total,
+  accessToken: accessToken
   
 
 }

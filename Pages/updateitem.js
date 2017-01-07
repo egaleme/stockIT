@@ -21,16 +21,16 @@ var price = Context.item.map(function(x) {
 })
 
 var owner = Context.item.map(function(x) {
-	return x.owner
+	return x.user_id
 })
 
 
 function updateProduct() {
-	if (Context.user.value === owner.value) {
+	
 		Context.updateProduct(id.value, name.value, batchno.value, quantity.value, expiringdate.value, price.value, owner.value)
 		
 		router.goBack()
-	}
+	
 	
 }
 

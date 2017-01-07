@@ -1,1 +1,1 @@
-module.exports = 'http://localhost:4000'
+module.exports = 'http://localhost:3000/v1'

@@ -1,22 +1,18 @@
 <Panel ux:Class="LoginScreen" Background="#18f" Transition="None" >
   <Router ux:Dependency="router" />
   <JavaScript File="login.js" />
-
-
-    <Panel Alignment="VerticalCenter" >
+  
     <TextInput ux:Class="InputText"  Margin="10" PlaceholderColor="#ffffff80" Alignment="HorizontalCenter" TextColor="White" />
     <Rectangle ux:Class="Seperator" Height="1" Color="White" Width="50%"  />
       <Grid Rows="1*,1*, 1*">
-        <StackPanel Alignment="Top" >
+        <StackPanel Alignment="HorizontalCenter">
           
-           <Text Value="stockIT"  Alignment="HorizontalCenter" TextColor="White"  FontSize="50"/>
+           <Text Value="stockIT"  Alignment="Center" TextColor="White"  FontSize="50"/>
            
-            <Text Value="a stock manager app by gab aleme" Alignment="HorizontalCenter" TextColor="#ffffff80" />
+            <Text Value="a stock manager app by gab aleme" Alignment="Center" TextColor="#ffffff80" />
         </StackPanel>
-        <Panel Margin="10" Alignment="VerticalCenter">
-          <Text Value="{err}" TextColor="Red" Alignment="Center" FontSize="20" />
-        </Panel>
-      <StackPanel HitTestMode="LocalBoundsAndChildren" Alignment="VerticalCenter" >
+        
+      <StackPanel HitTestMode="LocalBoundsAndChildren">
           <InputText PlaceholderText="Username" Value="{username}"/>
           <Seperator />
           <InputText PlaceholderText="Password" IsPassword="true" Value="{password}"/>
@@ -27,9 +23,10 @@
             </Rectangle>
           </Panel>
       </StackPanel>
-      <Rectangle Color="#127799" Height="50" Margin="0,127,0,0" Clicked="{goToCreateUser}" >
+    
+      <Rectangle Color="#127799" Height="50" Margin="0,129,0,0" Clicked="{goToCreateUser}" >
         <Text  Value="Create Account" Alignment="Center" TextColor="White"/>
       </Rectangle>
       </Grid>
-    </Panel>
+    
 </Panel>

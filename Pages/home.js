@@ -20,14 +20,12 @@
     router.push('updateitem')
   }
 
-Context.getProducts(Context.user.value)
-
 function logout() {
   Context.user.clear()
   Context.products.clear() 
   Context.total.clear()
   Context.logout()
-  	router.goto('login')
+  router.goto('login')
   }
 
   function deleteProduct(args) {

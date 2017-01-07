@@ -6,10 +6,9 @@
     <JavaScript>
     var API_URL = require("Modules/api.js")
     var Observable = require("FuseJS/Observable");
+    var Context = require("Modules/Context")
     var username = Observable();
     var password = Observable();
-    var firstname = Observable();
-    var lastname = Observable();
     var email = Observable();
     var err = Observable();
 
@@ -24,7 +23,7 @@
           mode: 'cors',
           credentials: 'same-origin',
           headers: new Headers({'Content-Type': 'application/json'}),
-          body: JSON.stringify({email: email.value,username: username.value, password: password.value, firstname: firstname.value, lastname: lastname.value})
+          body: JSON.stringify({email: email.value,username: username.value, password: password.value})
 
         }).
         then(function(response) {
@@ -36,19 +35,18 @@
         }).
         then(function(data) {
           username.value=""
-          firstname.value=""
-          lastname.value=""
           password.value=""
           email.value = ""
           err.value = ""
-          router.push("home", data.username)
+          Context.user.value = data.data[0].id
+          router.push("login")
         }).
         catch(function(error) {
           err.value = error.message
         })
 
       };
-      module.exports = {goBack, err, createUser, email, username, firstname, lastname, password}
+      module.exports = {goBack, err, createUser, email, username,  password}
     </JavaScript>
     <DockPanel>
       <DockPanel Dock="Top" Color="#18f" >
@@ -63,10 +61,6 @@
 
       <StackPanel Alignment="Top" Margin="20" >
         <Text TextColor="Red" Value="{err}" />
-        <WhiteTextInput PlaceholderText="Firstname" Value="{firstname}" />
-        <HorizontalLine />
-        <WhiteTextInput PlaceholderText="Lastname" Value="{lastname}" />
-        <HorizontalLine />
         <WhiteTextInput PlaceholderText="Username" Value="{username}" />
         <HorizontalLine />
         <WhiteTextInput PlaceholderText="Email"  Value="{email}" />
