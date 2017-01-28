@@ -4,7 +4,7 @@
   <Router ux:Dependency="router"  />
   <JavaScript File="home.js" />
 
-  <DockPanel>
+  <DockPanel ux:Name="homePage">
     <Panel Dock="Top" Color="#127799" Height="48">
       <ProductText Value="Products List" Alignment="Center" />
       <Image File="../Assets/directionLeft.png" Clicked="{logout}" Alignment="Left" />
@@ -26,51 +26,89 @@
         <Each Items="{products}">
           <Panel>
             <Deferred>
-              <Seperator Color="#c7cfce" Alignment="Bottom" Width="100%" Opacity="0.7" />
-              <DockPanel >
-                <Circle Width="60" Height="60" Dock="Left" Color="{expireTracker}" Margin="10,0,10,0" >
-                  <Panel>
-                    <Text TextColor="#fff" Alignment="Center" Value="{quantity}"/>
-                  </Panel>
-                </Circle>
-                <Grid ColumnCount="2" RowCount="5"  Margin="12"  >
-                  <Text Value="Name:" Row="0" Column="0" />
-                  <Text Value="Batch no:" Row="1" Column="0" />
-                  <Text Value="=N=:" Row="2" Column="0" />
+              <PageControl Active="content">
+                
+              <Page ux:Name="content">
+                  <Seperator Color="#c7cfce" Alignment="Bottom" Width="100%" Opacity="0.7" />
+                  <DockPanel Margin="7,1,7,0">
+                    <Circle Width="60" Height="60" Dock="Left" Color="{expireTracker}" Margin="10,0,10,0" >
+                      <Panel>
+                        <Text TextColor="#fff" Alignment="Center" Value="{quantity}"/>
+                      </Panel>
+                    </Circle>
+                    <Grid ColumnCount="2" RowCount="5"  Margin="12"  >
+                      <Text Value="Name:" Row="0" Column="0" />
+                      <Text Value="Batch no:" Row="1" Column="0" />
+                      <Text Value="=N=:" Row="2" Column="0" />
 
-                  <Text Value="{name}" Row="0" Column="1"/>
-                  <Text Value="{batchno}" Row="1" Column="1"/>
-                  <Text  Value="{price}" Row="2" Column="1" />
-                  <Text Value="{bb}" Row="3" Alignment="CenterLeft"/>
-                  <Panel Row="4" Column="1">
-                    <Grid Columns="1*,1*">
-                        <Rectangle HitTestMode="LocalBoundsAndChildren" Margin="10"  CornerRadius="100" Fill="#b37f59" Width="40" Height="20">
-                          <Clicked Handler="{updateProduct}" />
-                          <Text TextColor="#ffffff" FontSize="10" Alignment="Center">Edit</Text>
-                       </Rectangle>
-                       <Rectangle HitTestMode="LocalBoundsAndChildren" Margin="10" CornerRadius="100" Fill="Red" Width="40" Height="20">
-                        <Clicked Handler="{deleteProduct}" />
-                          <Text TextColor="#ffffff" FontSize="10" Alignment="Center">Delete</Text>
-                       </Rectangle>
-                      </Grid>
-                  </Panel>
-                </Grid>
-                  <LayoutAnimation>
-  							    <Move RelativeTo="LayoutChange" Y="1" Duration="0.8" Easing="ElasticIn" />
-  						    </LayoutAnimation>
-
-    						<AddingAnimation>
-    							<Move RelativeTo="Size" X="1" Duration="0.3" Easing="CircularIn" />
-    						</AddingAnimation>
-
-    						<RemovingAnimation>
-    							<Move RelativeTo="Size" X="-1" Duration="0.4" Easing="CircularOut" />
-    						</RemovingAnimation>
-              </DockPanel>
+                      <Text Value="{name}" Row="0" Column="1"/>
+                      <Text Value="{batchno}" Row="1" Column="1"/>
+                      <Text  Value="{price}" Row="2" Column="1" />
+                      <Text Value="{bb}" Row="3" Alignment="CenterLeft"/>
+                      <Panel Row="4" Column="1">
+                        <Grid Columns="1*" Margin="10">
+                            <Rectangle HitTestMode="LocalBoundsAndChildren" Margin="10"  CornerRadius="100" Fill="#b37f59" Width="40" Height="20">
+                              <Tapped Handler="{updateProduct}" />
+                              <Text TextColor="#ffffff" FontSize="10" Alignment="Center">Edit</Text>
+                           </Rectangle>
+                           
+                          </Grid>
+                      </Panel>
+                    </Grid>
+                    </DockPanel>
+                  </Page>
+                  <Page Background="Red">
+                    <Operation ux:Name="deleteText">Delete</Operation>
+                    <Image ux:Class="Icon" Width="30" Height="30" Margin="10" />
+                    <Icon ux:Name="checkmarkIcon" Alignment="CenterLeft"
+                      File="../Assets/Checkmark.png" />
+            
+                    <WhileActive>
+                      <Callback Handler="{deleteProduct}" />
+                    </WhileActive>
+                   </Page>
+                </PageControl>
+               
+                  
+           
+            <Text ux:Class="Operation" TextAlignment="Center" Alignment="Center"
+              Color="#fff" FontSize="22"/>
             </Deferred>
           </Panel>
         </Each>
       </StackPanel>
     </ScrollView>
+
   </DockPanel>
+
+  <DockPanel ux:Name="notLoggedIn" Opacity="0">
+      <DockPanel Dock="Top" Color="#18f" >
+        <StatusBarBackground Dock="Top" />
+        <Panel Height="48">
+          <Image File="../Assets/arrow.png" Alignment="Left" Clicked="{goBack}" />
+        </Panel>
+      </DockPanel>
+      <Panel Alignment="VerticalCenter" Margin="20">
+        <Text  TextWrapping="Wrap" TextColor="Red" Value="Not Authorized. Please Go Back and Signup" Alignment="Center" FontSize="20"/>
+      </Panel>
+
+      
+  </DockPanel>
+
+  <WhileTrue Value="{LoggedIn}">
+    <Set notLoggedIn.Opacity="0" />
+  </WhileTrue>
+  <WhileFalse Value="{LoggedIn}">
+    <Change homePage.Opacity="0"/>
+    <Change notLoggedIn.Opacity="1" />
+  </WhileFalse>
+
+          <RemovingAnimation>
+              <Move RelativeTo="Size" Y="-1" Duration="0.4" Easing="CircularInOut" />
+            </RemovingAnimation>
+
+            <LayoutAnimation>
+              <Move RelativeTo="LayoutChange" Y="1" Duration="0.4" Easing="CircularInOut" />
+            </LayoutAnimation>
+
 </Panel>

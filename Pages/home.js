@@ -1,7 +1,10 @@
- var Context = require('Modules/Context')
- var Observable = require('FuseJS/Observable')
+ var Context = require('Modules/Context');
+ var Observable = require('FuseJS/Observable');
+ var Storage = require("FuseJS/Storage");
+ var Lifecycle = require('FuseJS/Lifecycle');
 
  var todaysDate = Observable()
+ var LoggedIn = Observable()
 
  function renderCurrentDate() {
 		var date = new Date()
@@ -21,17 +24,24 @@
   }
 
 function logout() {
-  Context.user.clear()
+
   Context.products.clear() 
-  Context.total.clear()
-  Context.logout()
-  router.goto('login')
+  Context.total.value=0
+  Context.totalAmount.clear()
+  Storage.read(Context.SAVENAME).then(function(content) {
+    var data = JSON.parse(content)
+    Context.logout(data.accessToken)
+  }, function(error) {
+  console.log("no accessToken in localStorage")
+  });
+   Storage.deleteSync(Context.SAVENAME);
+   Storage.deleteSync(Context.STOREDATA);
+   router.goto('login')
   }
 
   function deleteProduct(args) {
     var product = args.data
-    Context.deleteProduct(product)
-    
+    Context.deleteProduct(product)  
   }
 
  function goBack() {
@@ -40,4 +50,4 @@ function logout() {
  }
 
 
-module.exports = {deleteProduct, updateProduct, todaysDate, goBack, logout, createItem, products: Context.products, totalAmount: Context.totalAmount}
+module.exports = {LoggedIn: Context.isLoggedIn, deleteProduct, updateProduct, todaysDate, goBack, logout, createItem, products: Context.products, totalAmount: Context.totalAmount}

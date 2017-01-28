@@ -1,0 +1,7 @@
+C:/Android/AndroidNDK
+9
+armeabi-v7a
+-O3 -DNDEBUG
+
+ -IC:/Users/Emenike\ pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/include -IC:/Android/AndroidNDK/sources/android/support/include -IC:/Users/Emenike\ pc/AppData/Local/Fusetools/Packages/Fuse.Scripting.V8/0.43.11
+C:/Android/AndroidNDK/sources/cxx-stl/stlport/stlport

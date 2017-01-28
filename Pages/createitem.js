@@ -1,19 +1,34 @@
 var Context = require('Modules/Context')
 var Observable = require('FuseJS/Observable')
+var Storage = require('FuseJS/Storage')
 
 var productName = Observable();
 var batchNo = Observable();
 var expiringDate = Observable();
 var price = Observable();
 var qty = Observable();
-var err = Observable();
+var errField = Observable();
 
 
 function goBack() {
-      router.goto("home")
- }
+	 errField.value = '';
+	 productName.value = '';
+	  batchNo.value = '';
+	  expiringDate.value = '';
+	  price.value = '';
+	  qty.value = '';
+     router.goto("home")
+}
+
 function addItem() {
-	Context.createProduct(productName.value, batchNo.value, qty.value, expiringDate.value, price.value)
+
+if (!productName.value || !batchNo.value || !qty.value || !expiringDate.value || !price.value) {
+    errField.value = "please supply all fields"
+    return;
+  }	
+
+ Context.createProduct( productName.value, batchNo.value, qty.value, expiringDate.value, price.value)
+  errField.value = '';
   productName.value = '';
   batchNo.value = '';
   expiringDate.value = '';
@@ -24,4 +39,4 @@ function addItem() {
 
 
 
-module.exports = {goBack, addItem, productName, batchNo, expiringDate, price, qty}
+module.exports = {goBack, addItem, productName, batchNo, expiringDate, price, qty, errField}

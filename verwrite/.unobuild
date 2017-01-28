@@ -1,0 +1,4 @@
+$: -648700828
+BuildCommand: build.bat
+RunCommand: run.bat
+Product: stockIT.apk

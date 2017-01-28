@@ -1,0 +1,127 @@
+apply plugin: 'com.android.model.application'
+
+dependencies {
+    compile fileTree(dir: 'src/main/libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+//#if #(Gradle.Dependency.Compile:IsRequired)
+//    #(Gradle.Dependency.Compile:Join('\n', 'compile \'', '\''))
+//#endif
+//#if #(Gradle.Dependency:IsRequired)
+//    #(Gradle.Dependency:Join('\n'))
+//#endif
+}
+
+
+task copySharedLibraries {
+    copy {
+        from 'C:/Android/AndroidNDK/sources/cxx-stl/stlport/libs/armeabi-v7a/libstlport_shared.so'
+        into file('src/main/jniLibs/armeabi-v7a')
+    }
+    copy {
+        from 'C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/Fuse.Scripting.V8/0.43.11/lib/Android/libV8Simple.so'
+        into file('src/main/jniLibs/armeabi-v7a')
+    }
+}
+
+build.dependsOn copySharedLibraries
+
+//#if #(Gradle.Repository:IsRequired)
+//repositories {
+//    #(Gradle.Repository:Join('\n'))
+//}
+//#endif
+
+model {
+    repositories {
+//#if #(JNI.SystemLibrary:IsSet || JNI.SharedLibrary:IsSet)
+//        libs(PrebuiltLibraries) {
+//            prebuilt {
+//                binaries.withType(SharedLibraryBinary) {
+//                    #(JNI.SystemLibrary:Join('\n                    ', 'sharedLibraryFile = file(\'', '\')'))
+//                    #(JNI.SharedLibrary:Join('\n                    ', 'sharedLibraryFile = file(\'', '\')'))
+//                }
+//            }
+//        }
+//#endif
+//#if #(Gradle.Model.Repository:IsRequired)
+//        #(Gradle.Model.Repository:Join('\n'))
+//#endif
+    }
+
+    android.lintOptions {
+        checkReleaseBuilds = false
+    }
+
+    android {
+        compileSdkVersion = 23
+        buildToolsVersion = "25.0.0"
+
+        defaultConfig.with {
+            applicationId = "com.apps.stockit"
+            minSdkVersion.apiLevel = 16
+            targetSdkVersion.apiLevel = 23
+            versionCode = 0
+            versionName = "0.0.0"
+        }
+    }
+
+//#if #(Project.Android.Key.Store:IsSet)
+    android.signingConfigs {
+        create("release") {
+            keyAlias = "application"
+            keyPassword = "200owina07"
+            storeFile = file("C:/stockit/stockit/release.keystore")
+            storePassword = "200owina07"
+        }
+    }
+//#endif
+
+    android.ndk {
+        moduleName = "stockIT"
+        debuggable = false
+        platformVersion = 9
+        CFlags.addAll(["-std=c99"])
+        CFlags.addAll(["-IC:/stockit/stockit/verwrite/stockIT/app/src/main/include", "-IC:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/include", "-IC:/Android/AndroidNDK/sources/android/support/include", "-IC:/Users/Emenike pc/AppData/Local/Fusetools/Packages/Fuse.Scripting.V8/0.43.11"])
+        CFlags.addAll([])
+        cppFlags.addAll(["-std=c++11", "-fexceptions", "-frtti", "-Wno-invalid-offsetof"])
+        cppFlags.addAll(["-IC:/stockit/stockit/verwrite/stockIT/app/src/main/include", "-IC:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/include", "-IC:/Android/AndroidNDK/sources/android/support/include", "-IC:/Users/Emenike pc/AppData/Local/Fusetools/Packages/Fuse.Scripting.V8/0.43.11"])
+        cppFlags.addAll([])
+        ldFlags.addAll(["-LC:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a", "-LC:/Android/AndroidNDK/sources/cxx-stl/stlport/libs/armeabi-v7a", "-LC:/Users/Emenike pc/AppData/Local/Fusetools/Packages/Fuse.Scripting.V8/0.43.11/lib/Android"])
+        ldLibs.addAll(["C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a/libuImage.a", "C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a/libpng.a", "C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a/libjpeg.a", "C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a/libfreetype.a", "C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a/libXliMain.a", "C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a/libXliPlatform.a", "C:/Users/Emenike pc/AppData/Local/Fusetools/Packages/UnoCore/0.43.8/prebuilt/Android/lib/armeabi-v7a/libuBase.a"])
+        ldLibs.addAll(["android", "log", "stlport_shared", "V8Simple", "EGL", "GLESv2", "z"])
+        stl = "stlport_shared"
+    }
+
+    android.sources {
+        main {
+//#if #(JNI.SystemLibrary:IsSet || JNI.SharedLibrary:IsSet)
+//            jni {
+//                dependencies {
+//                    library "prebuilt"
+//                }
+//            }
+//#endif
+        }
+    }
+
+    android.buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles.add(file('proguard-rules.txt'))
+//#if #(Project.Android.Key.Store:IsSet)
+            signingConfig = $("android.signingConfigs.release")
+//#endif
+        }
+    }
+
+    android.productFlavors {
+        // for detailed abiFilter descriptions, refer to "Supported ABIs" @
+        // https://developer.android.com/ndk/guides/abis.html#sa
+        create("arm7") {
+            ndk.abiFilters.add("armeabi-v7a")
+        }
+    }
+}
+

@@ -2,6 +2,7 @@
   <Router ux:Dependency="router" />
   <JavaScript File="login.js" />
   
+  <Panel ux:Name="myContent">
     <TextInput ux:Class="InputText"  Margin="10" PlaceholderColor="#ffffff80" Alignment="HorizontalCenter" TextColor="White" />
     <Rectangle ux:Class="Seperator" Height="1" Color="White" Width="50%"  />
       <Grid Rows="1*,1*, 1*">
@@ -12,7 +13,9 @@
             <Text Value="a stock manager app by gab aleme" Alignment="Center" TextColor="#ffffff80" />
         </StackPanel>
         
-      <StackPanel HitTestMode="LocalBoundsAndChildren">
+      <StackPanel HitTestMode="LocalBoundsAndChildren" ux:Name="loginBar">
+          <Text TextColor="Red" Alignment="Center" TextWrapping="Wrap" Value="{errMessage}" Margin="10"/>
+          <Text TextColor="Red" Alignment="Center" TextWrapping="Wrap" Value="{loginError}" Margin="10"/>
           <InputText PlaceholderText="Username" Value="{username}"/>
           <Seperator />
           <InputText PlaceholderText="Password" IsPassword="true" Value="{password}"/>
@@ -28,5 +31,11 @@
         <Text  Value="Create Account" Alignment="Center" TextColor="White"/>
       </Rectangle>
       </Grid>
-    
+
+    <WhileBusy>
+      <Change loadingPanel.Opacity="1" Duration=".4" />
+      <Change loginBar.Opacity="0" Duration=".4" />
+    </WhileBusy>
+    <MyLoadingIndicator ux:Name="loadingPanel" Opacity="0" ThemeColor="#fff" />
+  </Panel>
 </Panel>

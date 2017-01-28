@@ -7,46 +7,75 @@
     var API_URL = require("Modules/api.js")
     var Observable = require("FuseJS/Observable");
     var Context = require("Modules/Context")
+    var BusyTask = require("FuseJS/BusyTask")
+    var Storage = require("FuseJS/Storage")
     var username = Observable();
     var password = Observable();
     var email = Observable();
-    var err = Observable();
+    var errValue = Observable();
+    var message = Observable();
 
       function goBack() {
-        err.value = ""
+        errValue.value = ""
+        message.value = ""
+        username.value=""
+        password.value=""
+        email.value = ""
         router.goBack()
       }
 
       function createUser() {
+        if (!email.value || !username.value || !password.value) {
+          errValue.value = "must supply all fields";
+          return;
+        }
+        var task = new BusyTask(createBar);
+        errValue.value = '';
         fetch(`${API_URL}/users`, {
           method: 'post',
           mode: 'cors',
           credentials: 'same-origin',
           headers: new Headers({'Content-Type': 'application/json'}),
-          body: JSON.stringify({email: email.value,username: username.value, password: password.value})
+          body: JSON.stringify({grant_type: "password", email: email.value,username: username.value, password: password.value})
 
         }).
         then(function(response) {
           if (response.ok) {
+            task.done();
             return response.json()
           } else {
-            throw new Error("Please make sure all fields are filled !")
+            throw new Error('username already exists')
+
           }
         }).
         then(function(data) {
           username.value=""
           password.value=""
           email.value = ""
-          err.value = ""
-          Context.user.value = data.data[0].id
-          router.push("login")
+          errValue.value = ""
+          message.value = data.data[0].message
+         /*
+          Context.accessToken.value = data.data[0].access_token
+          var storeObject = {accessToken: data.data[0].access_token}
+          Storage.write(Context.SAVENAME, JSON.stringify(storeObject)).then(function(content) {
+            if (content !== '') {
+              Context.isLoggedIn.value = true
+            }
+          });
+          Context.getProducts(task, Context.accessToken.value)
+          router.push("home")
+          */
         }).
         catch(function(error) {
-          err.value = error.message
+          task.done();
+          errValue.value = error.message
+          username.value=""
+          password.value=""
+          email.value = ""
         })
 
       };
-      module.exports = {goBack, err, createUser, email, username,  password}
+      module.exports = {goBack, errValue, message, createUser, email, username,  password}
     </JavaScript>
     <DockPanel>
       <DockPanel Dock="Top" Color="#18f" >
@@ -59,8 +88,9 @@
       </DockPanel>
 
 
-      <StackPanel Alignment="Top" Margin="20" >
-        <Text TextColor="Red" Value="{err}" />
+      <StackPanel Alignment="Top" Margin="20" ux:Name="createBar" >
+        <Text TextWrapping="Wrap" TextColor="Red" Value="{message}" Alignment="Center" />
+        <Text TextWrapping="Wrap" TextColor="Red" Value="{errValue}" Alignment="Center" />
         <WhiteTextInput PlaceholderText="Username" Value="{username}" />
         <HorizontalLine />
         <WhiteTextInput PlaceholderText="Email"  Value="{email}" />
@@ -73,6 +103,12 @@
           </Rectangle>
         </Panel>
       </StackPanel>
+
+       <WhileBusy>
+      <Change loadingPanel.Opacity="1" Duration=".4" />
+      <Change createBar.Opacity="0" Duration=".4" />
+    </WhileBusy>
+    <MyLoadingIndicator ux:Name="loadingPanel" Opacity="0" ThemeColor="#fff" />
 
     </DockPanel>
 

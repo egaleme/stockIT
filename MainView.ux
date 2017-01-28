@@ -1,8 +1,30 @@
 <App>
+  <JavaScript>
+  var Storage = require("FuseJS/Storage");
+  var Context = require("Modules/Context");
+        
+    Storage.read(Context.SAVENAME).then(function(content) {
+    Context.products.clear()
+    var data = JSON.parse(content)
+    if (data.accessToken !== '') {
+      Context.accessToken.value = data.accessToken;
+      Context.isLoggedIn.value = true;
+     // Context.getProducts(task, data.accessToken);
+      Context.loadProducts();
+      router.goto("home")
+      
+    }
+    
+    }, function(error) {
+         console.log("no accessToken in localStorage")
+    });
+
+    
+   </JavaScript>
 
   <Router ux:Name="router" BackButtonAction="GoBack" />
   <ClientPanel>
-    <Navigator DefaultTemplate="login">
+    <Navigator DefaultPath="login">
       <LoginScreen ux:Template="login" router="router"/>
       <HomePage ux:Template="home" router="router" />
       <CreateUser ux:Template="createuser" router="router" />

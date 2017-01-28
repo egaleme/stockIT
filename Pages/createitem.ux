@@ -11,6 +11,7 @@
     </DockPanel>
     <ScrollView>
         <StackPanel Margin="20" >
+        <Text TextColor="Red" Alignment="Center" Value="{errField}" />
 
         <ProductInput PlaceholderText="Product name" Value="{productName}" />
         <HorizontalLine />

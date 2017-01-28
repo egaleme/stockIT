@@ -1,49 +1,37 @@
-var Context = require('Modules/Context')
-
+var Context = require('Modules/Context');
+var BusyTask = require("FuseJS/BusyTask");
 var Observable = require("FuseJS/Observable");
+var Storage = require("FuseJS/Storage");
 var username = Observable();
 var password = Observable();
-var uid = Observable() ;
-var err = Observable();
-var isShowing = Observable(false)
+var errMessage = Observable(); 
+var loginError = Observable();
 
-function startShowing() {
-  isShowing.value = true
-}
 
 function login() {
-  Context.login(username.value, password.value).
-	then(function(response) {
-        if (response.ok) {
-          return response.json()
-        } else {
-          username.value="";
-          password.value="";
-          throw new Error("Username/Password is not correct");
-        }
-      }).
-      then(function(data) {
+	if (!username.value || !password.value) {
+		errMessage.value = "must supply all fields"
+
+		return;
+	}
+
+  var task = new BusyTask(myContent);
+  
+  Context.login(username.value, password.value, task)
+  
+    setTimeout(function() {
+      task.done();
+    }, 1000);
+
+       	errMessage.value = ''
         username.value = ''
         password.value = ''
-       Context.user.value = data.data[0].user_id
-       Context.accessToken.value = data.data[0].access_token
-       Context.getProducts()
-       router.push("home")
-     })
-    .catch(function(error) {
-     err.value = error.message
-    })
-
-
+        loginError.value = ''
+        router.push("home")
 }
 
 function goToCreateUser() {
-      err.value = ""
       router.push("createuser")
-    };
-
-function goBack() {
-  router.goBack()
 }
 
-  module.exports = {startShowing, login, username, password, err, goToCreateUser, goBack, isShowing}
+ module.exports = {login, username, password, goToCreateUser, errMessage, loginError}

@@ -7,8 +7,38 @@
   "Includes": [
     "*",
     "Modules/*.js:Bundle"
-    
+  ],
+    "Projects": [
+    "fuse_modules\\bolav\\fuse-homescreen\\homescreen_include.unoproj"
 
-
-  ]
+  ],
+  "Excludes": [
+    "fuse_modules/"
+  ],
+  "FusePM": {
+    "Dependencies": [
+      "https://github.com/bolav/fuse-homescreen"
+      
+    ]
+  },
+  "Title": "stockIT",
+  "Publisher": "Gab Aleme",
+  "Version": "0.0.1",
+   "Android": {
+        "Description": "A stock management app, powered by Gab Aleme®.",
+        "Key": {
+            "Alias": "application",
+            "AliasPassword": "200owina07",
+            "Store": "release.keystore",
+            "StorePassword": "200owina07"
+        },
+        "Icons": {
+            "LDPI": "Icons/mipmap-ldpi/icon.png",
+            "MDPI": "Icons/mipmap-mdpi/icon.png",
+            "HDPI": "Icons/mipmap-hdpi/icon.png",
+            "XHDPI": "Icons/mipmap-xhdpi/icon.png",
+            "XXHDPI": "Icons/mipmap-xxhdpi/icon.png",
+            "XXXHDPI": "Icons/mipmap-xxxhdpi/icon.png"
+        }
+    }
 }
