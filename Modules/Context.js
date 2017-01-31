@@ -100,18 +100,22 @@ function renderDateString(datestring) {
 }
 
 
+
 function createProduct ( name, batchno, qty, expiringdate, price) {
+  
+  var productid = (Math.floor(Math.random() * 100000) + products.length);
 
   total.value = 0
   var productbb = "BB : "+ renderDateString(expiringdate)
-	products.add({id: 1, name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
+  
+	products.add({productid: productid, name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
 
       fetch(`${API_URL}/products?access_token=${accessToken.value}`, {
         method: 'post',
         mode: 'cors',
         credentials: 'same-origin',
         headers: new Headers({'Content-Type': 'application/json'}),
-        body: JSON.stringify({name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: qty})
+        body: JSON.stringify({productid: productid, name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: qty})
       }).
       then(function(response) {
         if (response.ok) {
@@ -123,7 +127,7 @@ function createProduct ( name, batchno, qty, expiringdate, price) {
       }).
       then(function(data) {
         total.value = 0;
-        products.replaceAt(products.length-1, {id: data.data[0].id, name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)});
+       /* products.replaceAt(products.length-1, {id: data.data[0].id, name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)});
         
        var storeArray =[];
         products.forEach(function(product) {
@@ -131,12 +135,18 @@ function createProduct ( name, batchno, qty, expiringdate, price) {
         });
         var storeObject = {store: storeArray};
         Storage.write(STOREDATA, JSON.stringify(storeObject));
+      */
       }).
       catch(function(error) {
         console.log('couldnt save product');
 
       })
-
+         var storeArray =[];
+        products.forEach(function(product) {
+          storeArray.push(product);
+        });
+        var storeObject = {store: storeArray};
+        Storage.write(STOREDATA, JSON.stringify(storeObject));
          products.forEach(function(product) {
          total.value = (total.value + (product.price * product.quantity))
          totalAmount.value = " Total Current Stock Value: =N= "+ total.value.toFixed(2)
@@ -146,11 +156,11 @@ function createProduct ( name, batchno, qty, expiringdate, price) {
 
 }
 
-function updateProduct(id, name, batchno, quantity, expiringdate, price) {
+function updateProduct(id, productid, name, batchno, quantity, expiringdate, price) {
   total.value = 0
   for (var i = 0; i < products.length; i++) {
         var product = products.getAt(i);
-        if (product.id == id) {
+        if (product.productid == productid) {
             product.name = name;
             product.batchno = batchno;
             product.quantity= quantity;
@@ -170,7 +180,7 @@ function updateProduct(id, name, batchno, quantity, expiringdate, price) {
   var storeObject = {store: storeArray};
   Storage.write(STOREDATA, JSON.stringify(storeObject));
 
-      fetch(`${API_URL}/products/${id}?access_token=${accessToken.value}`, {
+      fetch(`${API_URL}/products/${productid}?access_token=${accessToken.value}`, {
         method: 'put',
         mode: 'cors',
         credentials: 'same-origin',
@@ -216,7 +226,7 @@ function deleteProduct(product) {
 
   totalAmount.value = " Total Current Stock Value: =N= "+ total.value.toFixed(2)
 
-  return fetch(API_URL+'/products/'+product.id+'?access_token='+accessToken.value, {
+  return fetch(`${API_URL}/products/${product.productid}?access_token=${accessToken.value}`, {
     method: 'delete',
     mode: 'cors',
     credentials: 'same-origin'

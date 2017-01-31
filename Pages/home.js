@@ -23,6 +23,7 @@
     router.push('updateitem')
   }
 
+ 
 function logout() {
 
   Context.products.clear() 
@@ -50,4 +51,4 @@ function logout() {
  }
 
 
-module.exports = {LoggedIn: Context.isLoggedIn, deleteProduct, updateProduct, todaysDate, goBack, logout, createItem, products: Context.products, totalAmount: Context.totalAmount}
+module.exports = { LoggedIn: Context.isLoggedIn, deleteProduct, updateProduct, todaysDate, goBack, logout, createItem, products: Context.products, totalAmount: Context.totalAmount}

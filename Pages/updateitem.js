@@ -5,6 +5,9 @@ var Storage = require('FuseJS/Storage');
 var id = Context.item.map(function(x) {
 	return x.id
 })
+var productid = Context.item.map(function(x) {
+	return x.productid
+})
 var name = Context.item.map(function(x) {
 	return x.name
 })
@@ -26,7 +29,7 @@ var price = Context.item.map(function(x) {
 
 function updateProduct() {
 
-    	Context.updateProduct(id.value, name.value, batchno.value, quantity.value, expiringdate.value, price.value)
+    	Context.updateProduct(id.value, productid.value, name.value, batchno.value, quantity.value, expiringdate.value, price.value)
    		router.goBack()	
 }
 
@@ -38,6 +41,7 @@ module.exports = {
 	goBack,
 	updateProduct,
 	id,
+	productid,
 	name,
 	price,
 	quantity,
