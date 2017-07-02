@@ -1,17 +1,19 @@
 <Panel ux:Class="CreateUser" Background="#18f" >
 
     <Router ux:Dependency="router" />
+   
     <Rectangle ux:Class="HorizontalLine" Color="#ffffff80"  Height="1" />
-    <TextInput ux:Class="WhiteTextInput" Alignment="Center" TextColor="White" Margin="10" PlaceholderColor="#ffffff80" />
+    <TextInput Font="LatoLight" ux:Class="WhiteTextInput" Alignment="Center" TextColor="White" Margin="10" PlaceholderColor="#ffffff80" />
     <JavaScript>
     var API_URL = require("Modules/api.js")
     var Observable = require("FuseJS/Observable");
     var Context = require("Modules/Context")
-    var BusyTask = require("FuseJS/BusyTask")
+   // var BusyTask = require("FuseJS/BusyTask")
     var Storage = require("FuseJS/Storage")
     var username = Observable();
     var password = Observable();
     var email = Observable();
+    var name = Observable();
     var errValue = Observable();
     var message = Observable();
 
@@ -21,27 +23,31 @@
         username.value=""
         password.value=""
         email.value = ""
+        name.value = ""
         router.goBack()
       }
 
       function createUser() {
-        if (!email.value || !username.value || !password.value) {
+        if (!email.value || !username.value || !password.value || !name.value) {
           errValue.value = "must supply all fields";
           return;
         }
-        var task = new BusyTask(createBar);
+       // var task = new BusyTask(createBar);
+       isBusy.activate();
         errValue.value = '';
         fetch(`${API_URL}/users`, {
           method: 'post',
           mode: 'cors',
           credentials: 'same-origin',
           headers: new Headers({'Content-Type': 'application/json'}),
-          body: JSON.stringify({grant_type: "password", email: email.value,username: username.value, password: password.value})
+          body: JSON.stringify({
+            user: {name: name.value, email: email.value, username: username.value, password: password.value}})
 
         }).
         then(function(response) {
           if (response.ok) {
-            task.done();
+           // task.done();
+           isBusy.deactivate();
             return response.json()
           } else {
             throw new Error('username already exists')
@@ -49,11 +55,12 @@
           }
         }).
         then(function(data) {
+          name.value = ""
           username.value=""
           password.value=""
           email.value = ""
           errValue.value = ""
-          message.value = data.data[0].message
+          message.value = "Success. Please check your email and verify your account"
          /*
           Context.accessToken.value = data.data[0].access_token
           var storeObject = {accessToken: data.data[0].access_token}
@@ -67,15 +74,17 @@
           */
         }).
         catch(function(error) {
-          task.done();
+         // task.done();
+         isBusy.deactivate();
           errValue.value = error.message
           username.value=""
           password.value=""
           email.value = ""
+          name.value = ""
         })
 
       };
-      module.exports = {goBack, errValue, message, createUser, email, username,  password}
+      module.exports = {goBack, errValue, message, createUser, email, username,  password, name}
     </JavaScript>
     <DockPanel>
       <DockPanel Dock="Top" Color="#18f" >
@@ -89,9 +98,12 @@
 
 
       <StackPanel Alignment="Top" Margin="20" ux:Name="createBar" >
-        <Text TextWrapping="Wrap" TextColor="Red" Value="{message}" Alignment="Center" />
-        <Text TextWrapping="Wrap" TextColor="Red" Value="{errValue}" Alignment="Center" />
-        <WhiteTextInput PlaceholderText="Username" Value="{username}" />
+        <Busy ux:Name="isBusy" IsActive="false"/>
+        <Text Font="LatoLight" TextWrapping="Wrap" TextColor="Red" Value="{message}" Alignment="Center" />
+        <Text Font="LatoLight" TextWrapping="Wrap" TextColor="Red" Value="{errValue}" Alignment="Center" />
+        <WhiteTextInput PlaceholderText="name" Value="{name}" />
+        <HorizontalLine />
+      <WhiteTextInput PlaceholderText="Username" Value="{username}" />
         <HorizontalLine />
         <WhiteTextInput PlaceholderText="Email"  Value="{email}" />
         <HorizontalLine />
@@ -99,7 +111,7 @@
         <HorizontalLine />
         <Panel Alignment="VerticalCenter" >
           <Rectangle Clicked="{createUser}" CornerRadius="80" Fill="#127799" Width="100" Height="40" Margin="10,50" >
-            <Text TextColor="#ffffff" Alignment="Center">Sign Up</Text>
+            <Text Font="LatoRegular" TextColor="#ffffff" Alignment="Center">Sign Up</Text>
           </Rectangle>
         </Panel>
       </StackPanel>

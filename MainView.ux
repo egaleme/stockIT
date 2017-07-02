@@ -2,7 +2,8 @@
   <JavaScript>
   var Storage = require("FuseJS/Storage");
   var Context = require("Modules/Context");
-        
+  var Observable = require("FuseJS/Observable");
+      
     Storage.read(Context.SAVENAME).then(function(content) {
     Context.products.clear()
     var data = JSON.parse(content)
@@ -21,6 +22,7 @@
 
     
    </JavaScript>
+   <FontsClass />
 
   <Router ux:Name="router" BackButtonAction="GoBack" />
   <ClientPanel>

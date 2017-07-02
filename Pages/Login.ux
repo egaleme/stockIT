@@ -1,34 +1,38 @@
 <Panel ux:Class="LoginScreen" Background="#18f" Transition="None" >
+ 
   <Router ux:Dependency="router" />
   <JavaScript File="login.js" />
-  
+  <OnBackButton>
+    <HomeScreen Type="CallIntent" />
+  </OnBackButton>
+ 
   <Panel ux:Name="myContent">
-    <TextInput ux:Class="InputText"  Margin="10" PlaceholderColor="#ffffff80" Alignment="HorizontalCenter" TextColor="White" />
-    <Rectangle ux:Class="Seperator" Height="1" Color="White" Width="50%"  />
+    <Busy ux:Name="isBusy" IsActive="false"/>
+    <TextInput ux:Class="InputText" Font="LatoLight"  Margin="10" PlaceholderColor="#ffffff80" Alignment="HorizontalCenter" TextColor="White" />
+    <Rectangle ux:Class="Seperator" Height="1" Color="#ffffff80" Width="50%" Opacity="0.5"  />
       <Grid Rows="1*,1*, 1*">
         <StackPanel Alignment="HorizontalCenter">
           
-           <Text Value="stockIT"  Alignment="Center" TextColor="White"  FontSize="50"/>
+           <Text Font="AlegreyaSans" Value="stockIT"  Alignment="Center" TextColor="White"  FontSize="50"/>
            
-            <Text Value="a stock manager app by gab aleme" Alignment="Center" TextColor="#ffffff80" />
+            <Text Font="AlegreyaSans" Value="a stock manager app by gab aleme" Alignment="Center" TextColor="#ffffff80" />
         </StackPanel>
         
       <StackPanel HitTestMode="LocalBoundsAndChildren" ux:Name="loginBar">
           <Text TextColor="Red" Alignment="Center" TextWrapping="Wrap" Value="{errMessage}" Margin="10"/>
-          <Text TextColor="Red" Alignment="Center" TextWrapping="Wrap" Value="{loginError}" Margin="10"/>
           <InputText PlaceholderText="Username" Value="{username}"/>
           <Seperator />
           <InputText PlaceholderText="Password" IsPassword="true" Value="{password}"/>
           <Seperator />
           <Panel >
             <Rectangle Color="#127799" Height="40" Margin="20" Width="100" CornerRadius="80">
-              <Text Value="Login" Alignment="Center" TextColor="White" Clicked="{login}"/>
+              <Text Font="LatoRegular" Value="Login" Alignment="Center" TextColor="White" Clicked="{login}"/>
             </Rectangle>
           </Panel>
       </StackPanel>
     
-      <Rectangle Color="#127799" Height="50" Margin="0,129,0,0" Clicked="{goToCreateUser}" >
-        <Text  Value="Create Account" Alignment="Center" TextColor="White"/>
+      <Rectangle Color="#127799" Height="60" Margin="0,129,0,0" Clicked="{goToCreateUser}" >
+        <Text Font="LatoRegular" Value="Create Account" Alignment="Center" TextColor="White"/>
       </Rectangle>
       </Grid>
 

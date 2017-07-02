@@ -1,17 +1,18 @@
 <Panel ux:Class="CreateItem" Color="#18f" >
   <Router ux:Dependency="router" />
-  <TextInput ux:Class="ProductInput" Margin="10" PlaceholderColor="#ffffff80" TextColor="White" />
+  <TextInput Font="LatoLight" ux:Class="ProductInput" Margin="10" PlaceholderColor="#ffffff80" TextColor="White" />
   <JavaScript File="createitem.js" />
+ 
   <DockPanel>
     <DockPanel Dock="Top" Color="#127799">
       <Panel Height="48">
-        <Text TextColor="White" Value="Add Product" Alignment="Center"  />
+        <Text TextColor="White" Font="AlegreyaSans" Value="Add Product" Alignment="Center"  />
         <Image File="../Assets/directionLeft.png" Clicked="{goBack}" Alignment="Left" />
       </Panel>
     </DockPanel>
     <ScrollView>
         <StackPanel Margin="20" >
-        <Text TextColor="Red" Alignment="Center" Value="{errField}" />
+        <Text TextColor="Red" Font="LatoLight" Alignment="Center" Value="{errField}" />
 
         <ProductInput PlaceholderText="Product name" Value="{productName}" />
         <HorizontalLine />
@@ -25,7 +26,7 @@
         <HorizontalLine />
         <Panel Alignment="VerticalCenter" >
           <Rectangle Clicked="{addItem}" CornerRadius="80" Fill="#127799" Width="100" Height="40" Margin="10,50" >
-            <Text TextColor="#ffffff" Alignment="Center">Add</Text>
+            <Text Font="LatoRegular" TextColor="#ffffff" Alignment="Center">Add</Text>
           </Rectangle>
         </Panel>
       </StackPanel>

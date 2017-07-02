@@ -25,12 +25,21 @@ var price = Context.item.map(function(x) {
 })
 
 
-
+var prodChannel = Context.socket.channel("products:joined", {guardian_token: Context.accessToken.value});
+prodChannel.on("product_updated", function(payload) {
+	Context.updateProduct(payload.data.id, payload.data.productid, payload.data.name, payload.data.batchno, payload.data.quantity, payload.data.expiringdate, payload.data.price);
+	router.goBack();
+})
+prodChannel.join()
+	.receive("ok", function(resp) {
+		console.log("Joined products")
+	})
+	.receive("error", function(resp) {
+		return console.log("Unable to join", resp)
+	})
 
 function updateProduct() {
-
-    	Context.updateProduct(id.value, productid.value, name.value, batchno.value, quantity.value, expiringdate.value, price.value)
-   		router.goBack()	
+	prodChannel.push("update_product", {productid: productid.value, product: {name: name.value, batchno: batchno.value, quantity: quantity.value, expiringdate: expiringdate.value, price: price.value}})
 }
 
 function goBack() {

@@ -1,0 +1,7 @@
+<Panel ux:Class="FontsClass">
+	<Font File="../Assets/fonts/AlegreyaSans-Bold.otf" ux:Global="AlegreyaSans"/>
+	<Font File="../Assets/fonts/Lato-Light.ttf" ux:Global="LatoLight" />
+	<Font File="../Assets/fonts/Lato-Regular.ttf" ux:Global="LatoRegular" />
+	<Font File="../Assets/fonts/Lato-Thin.ttf" ux:Global="LatoThin" />
+	<Font File="../Assets/fonts/Lato-Bold.ttf" ux:Global="LatoBold" />
+</Panel>

@@ -1,22 +1,28 @@
-var Observable = require('FuseJS/Observable')
-var Storage = require("FuseJS/Storage")
-var API_URL = require('./api')
+var Observable = require('FuseJS/Observable');
+var Storage = require("FuseJS/Storage");
+var API_URL = require('./api');
+var Phoenix = require("Lib/phoenix-common");
 
-var products = Observable()
-var totalAmount = Observable()
-var total = Observable(0)
-var user = Observable()
-var item = Observable()
-var accessToken = Observable()
-var store = Observable()
-var error = Observable()
-var isLoggedIn = Observable(false)
+var products = Observable();
+var totalAmount = Observable();
+var total = Observable(0);
+var user = Observable();
+var item = Observable();
+var accessToken = Observable();
+var store = Observable();
+var error = Observable();
+var isLoggedIn = Observable(false);
+
+var socket = new Phoenix.Socket("ws://localhost:4000/socket");
+
+socket.connect();
+
+
+//var db = sqlite.open(storeData.sqlite);
 
 var SAVENAME = "localStorage.json";
 var STOREDATA = "storeStorage.json";
 var ERRORDATA = "errorStorage.json";
-
-
 
 function expireTracker(datestring) {
     var color
@@ -57,37 +63,28 @@ function expireTracker(datestring) {
 }
 
 
-function getProducts(task, accessToken) {
-  total.value = 0
- fetch(API_URL+'/products?access_token='+accessToken, {
-  method: 'get'
-}).
-  then(function (response) {
-    if (response.ok) {
-        task.done();
-          return response.json()
-        }
-  }).
-  then(function(data) {
-  var storeObject = {store: data.data};
+function getProducts(data) {
+  totalAmount.value = 0;
+//  products.clear();
+  total.value = 0;
+  
+    var storeObject = {store: data};
     Storage.write(STOREDATA, JSON.stringify(storeObject));
-    store.replaceAll(data.data)
-    for (var i = 0; i < data.data.length; i++) {
-       total.value = (total.value + (data.data[i].price * data.data[i].quantity))
-       
+
+    store.replaceAll(data)
+    for (var i = 0; i < data.length; i++) {
+       total.value = (total.value + (data[i].price * data[i].quantity))
+
      }
-       totalAmount.value = " Total Current Stock: =N= "+ total.value.toFixed(2)
-       store.forEach(function(product) {     
+      products.clear();
+       totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
+       store.forEach(function(product) {
        product.expireTracker = Observable()
        product.bb = Observable()
        product.bb.value = "BB : "+ product.expiringdate
        product.expireTracker.value = expireTracker(product.expiringdate)
        products.add(product)
-     })
-     }).
-       catch(function(error) {
-        console.log('can not load products')
-     })
+     });
 
 }
 
@@ -101,59 +98,26 @@ function renderDateString(datestring) {
 
 
 
-function createProduct ( name, batchno, qty, expiringdate, price) {
-  
-  var productid = (Math.floor(Math.random() * 100000) + products.length);
+function createProduct (id, productid,  name, batchno, quantity, expiringdate, price) {
 
+  
   total.value = 0
   var productbb = "BB : "+ renderDateString(expiringdate)
-  
-	products.add({productid: productid, name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
 
-      fetch(`${API_URL}/products?access_token=${accessToken.value}`, {
-        method: 'post',
-        mode: 'cors',
-        credentials: 'same-origin',
-        headers: new Headers({'Content-Type': 'application/json'}),
-        body: JSON.stringify({productid: productid, name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: qty})
-      }).
-      then(function(response) {
-        if (response.ok) {
-          return response.json()
-        } else {
+	products.add({id: id, productid: productid, name: name, price: price, bb: productbb, quantity: quantity, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
 
-          throw new Error("Error adding products.Please make sure all fields are filled")
-        }
-      }).
-      then(function(data) {
-        total.value = 0;
-       /* products.replaceAt(products.length-1, {id: data.data[0].id, name: name, price: price, bb: productbb, quantity: qty, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)});
-        
-       var storeArray =[];
-        products.forEach(function(product) {
-          storeArray.push(product);
-        });
-        var storeObject = {store: storeArray};
-        Storage.write(STOREDATA, JSON.stringify(storeObject));
-      */
-      }).
-      catch(function(error) {
-        console.log('couldnt save product');
-
-      })
          var storeArray =[];
-        products.forEach(function(product) {
+         products.forEach(function(product) {
           storeArray.push(product);
         });
         var storeObject = {store: storeArray};
         Storage.write(STOREDATA, JSON.stringify(storeObject));
+       
          products.forEach(function(product) {
          total.value = (total.value + (product.price * product.quantity))
-         totalAmount.value = " Total Current Stock Value: =N= "+ total.value.toFixed(2)
-   
+         totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
+
        })
-
-
 }
 
 function updateProduct(id, productid, name, batchno, quantity, expiringdate, price) {
@@ -180,32 +144,11 @@ function updateProduct(id, productid, name, batchno, quantity, expiringdate, pri
   var storeObject = {store: storeArray};
   Storage.write(STOREDATA, JSON.stringify(storeObject));
 
-      fetch(`${API_URL}/products/${productid}?access_token=${accessToken.value}`, {
-        method: 'put',
-        mode: 'cors',
-        credentials: 'same-origin',
-        headers: new Headers({'Content-Type': 'application/json'}),
-        body: JSON.stringify({name: name, batchno: batchno, expiringdate: renderDateString(expiringdate), price: price, quantity: quantity})
-      }).
-      then(function(response) {
-        if (response.ok) {
-          return response.json()
-        } else {
-
-          throw new Error("Error adding products.Please make sure all fields are filled")
-        }
-      }).
-
-      catch(function(error) {
-        console.log('could not update product');
-
-      })
-
   products.forEach(function(product) {
     total.value = (total.value + (product.price * product.quantity))
-   
+
   })
-  totalAmount.value = " Total Current Stock Value: =N= "+ total.value.toFixed(2)
+  totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
 
 }
 
@@ -218,100 +161,113 @@ function deleteProduct(product) {
     storeArray.push(product);
   });
   var storeObject = {store: storeArray};
-  Storage.write(STOREDATA, JSON.stringify(storeObject));  
+  Storage.write(STOREDATA, JSON.stringify(storeObject));
   products.forEach(function(product) {
     total.value = (total.value + (product.price * product.quantity))
-   
+
   })
 
-  totalAmount.value = " Total Current Stock Value: =N= "+ total.value.toFixed(2)
-
-  return fetch(`${API_URL}/products/${product.productid}?access_token=${accessToken.value}`, {
-    method: 'delete',
-    mode: 'cors',
-    credentials: 'same-origin'
-  })
+  totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
 
 }
 
 function logout(accessToken) {
-	 fetch(API_URL+'/access_tokens?access_token='+accessToken, {
+  totalAmount.value = '';
+  total.value = 0;
+	 fetch(API_URL+'/auth/logout', {
 		method: 'delete',
 		mode: 'cors',
+    headers: new Headers({'Authorization': `Bearer accessToken `}),
 		credentials: 'same-origin'
 	})
+   accessToken.value = '';
+    var tokenObject = {accessToken: accessToken.value};
 
+    Storage.write(SAVENAME, JSON.stringify(tokenObject))
 }
 
-function login(username, password, task) {
- fetch(API_URL+'/access_tokens', {
+function login(username, password) {
+return fetch(API_URL+'/auth/login', {
     method: 'post',
     mode: 'cors',
     credentials: 'same-origin',
     headers: new Headers({'Content-Type': 'application/json'}),
-    body: JSON.stringify({username: username, password: password, grant_type: "password"})
-  }).
-  then(function (response) {
-    if (response.ok) {
-        task.done();
-         response.json().
-  then(function(data) {
-    accessToken.value = data.data[0].access_token;
-    var tokenObject = {accessToken: data.data[0].access_token};
-    var storeObject = {store: data.data[0].user.products};
+    body: JSON.stringify({
+      user: {username: username, password: password}})
+  })
+}
+
+
+function initialProducts(data) {
+  products.clear();
+  total.value = 0;
+  totalAmount.value = 0;
+
+ //debug_log(JSON.stringify(data))
+    var storeObject = {store: data};
     Storage.write(STOREDATA, JSON.stringify(storeObject));
-    Storage.write(SAVENAME, JSON.stringify(tokenObject)).then(function(content) {
-      if(content !== '') {
-        isLoggedIn.value = true
-      } 
-    });
-    store.replaceAll(data.data[0].user.products);
-    for (var i = 0; i < data.data[0].user.products.length; i++) {
-       total.value = (total.value + (data.data[0].user.products[i].price * data.data[0].user.products[i].quantity))
-       
+    store.replaceAll(data);
+    for (var i = 0; i < data.length; i++) {
+       total.value = (total.value + (data[i].price * data[i].quantity))
+
      }
-       totalAmount.value = " Total Current Stock: =N= "+ total.value.toFixed(2)
-       store.forEach(function(product) {     
+       totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
+       store.forEach(function(product) {
        product.expireTracker = Observable()
        product.bb = Observable()
        product.bb.value = "BB : "+ product.expiringdate
        product.expireTracker.value = expireTracker(product.expiringdate)
        products.add(product)
      });
-     });
-     } else {
-      isLoggedIn.value = false
-     // error.value = "user not found"
-     throw new Error("user not found")
-     }
-     
-    }).
-  catch(function(error) {
-    
-    console.log(error.message)
-  })
 
 }
 
+function loadMore(data) {
+  totalAmount.clear()
+  total.value = 0
+
+       data.forEach(function(product) {
+       product.expireTracker = Observable()
+       product.bb = Observable()
+       product.bb.value = "BB : "+ product.expiringdate
+       product.expireTracker.value = expireTracker(product.expiringdate)
+       products.add(product)
+      
+     });
+
+  
+      var productsArray = [];
+       products.forEach(function(product) {
+       total.value = (total.value + (product.price * product.quantity))
+       totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
+       productsArray.push(product)
+       });
+
+       var storeObject = {store: productsArray};
+       Storage.write(STOREDATA, JSON.stringify(storeObject));
+}
+
+
 function loadProducts() {
+
   total.value = 0;
   Storage.read(STOREDATA).then(function(content) {
       var data = JSON.parse(content)
     store.replaceAll(data.store);
     for (var i = 0; i < data.store.length; i++) {
        total.value = (total.value + (data.store[i].price * data.store[i].quantity))
-       
+
      }
-       totalAmount.value = " Total Current Stock: =N= "+ total.value.toFixed(2)
-       store.forEach(function(product) {     
+       totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
+       store.forEach(function(product) {
        product.expireTracker = Observable()
        product.bb = Observable()
        product.bb.value = "BB : "+ product.expiringdate
        product.expireTracker.value = expireTracker(product.expiringdate)
        products.add(product)
      })
-    
-   
+
+
   }, function(error) {
     console.log("can not load products")
   })
@@ -334,8 +290,9 @@ module.exports = {
   loadProducts: loadProducts,
   ERRORDATA, ERRORDATA,
   isLoggedIn: isLoggedIn,
-  error: error
-
-  
+  error: error,
+  loadMore: loadMore,
+  initialProducts: initialProducts,
+  socket: socket
 
 }
