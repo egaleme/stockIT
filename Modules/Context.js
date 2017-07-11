@@ -1,7 +1,7 @@
 var Observable = require('FuseJS/Observable');
 var Storage = require("FuseJS/Storage");
 var API_URL = require('./api');
-var Phoenix = require("Lib/phoenix-common");
+var Socket = require("Lib/phoenix-common").Socket;
 
 var products = Observable();
 var totalAmount = Observable();
@@ -13,7 +13,7 @@ var store = Observable();
 var error = Observable();
 var isLoggedIn = Observable(false);
 
-var socket = new Phoenix.Socket("ws://localhost:4000/socket");
+var socket = new Socket("ws://localhost:4000/socket");
 
 socket.connect();
 
