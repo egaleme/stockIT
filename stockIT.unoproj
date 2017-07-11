@@ -17,8 +17,7 @@
   ],
   "FusePM": {
     "Dependencies": [
-      "https://github.com/bolav/fuse-homescreen",
-      "https://github.com/bolav/fuse-sqlite"
+      "https://github.com/bolav/fuse-homescreen"
     ]
   },
   "Title": "stockIT",

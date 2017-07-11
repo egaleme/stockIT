@@ -14,12 +14,6 @@ prodChannel.on("load_more", function(payload) {
   Context.loadMore(payload.data)
 })
 
-prodChannel.on("logout", function(resp) {
-  console.log(resp.message)
-  Context.accessToken.clear();
-  router.goto('login');
-})
-
 prodChannel.join()
   .receive("ok", function(resp) {
     console.log("Joined products")
@@ -75,7 +69,9 @@ function logout() {
    Storage.deleteSync(Context.SAVENAME);
    Storage.deleteSync(Context.STOREDATA);
    })
-   prodChannel.push("logout", {message: "logged out"})
+  Context.accessToken.clear();
+  router.goto('login');
+  console.log("logged out");
   }
 
   function deleteProduct(args) {

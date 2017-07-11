@@ -5,10 +5,8 @@
     <Rectangle ux:Class="HorizontalLine" Color="#ffffff80"  Height="1" />
     <TextInput Font="LatoLight" ux:Class="WhiteTextInput" Alignment="Center" TextColor="White" Margin="10" PlaceholderColor="#ffffff80" />
     <JavaScript>
-    var API_URL = require("Modules/api.js")
     var Observable = require("FuseJS/Observable");
     var Context = require("Modules/Context")
-   // var BusyTask = require("FuseJS/BusyTask")
     var Storage = require("FuseJS/Storage")
     var username = Observable();
     var password = Observable();
@@ -16,6 +14,15 @@
     var name = Observable();
     var errValue = Observable();
     var message = Observable();
+
+    var userChannel = Context.socket.channel("user:lobby")
+    userChannel.join()
+      .receive("ok", function(resp) {
+        console.log("Joined user channel")
+      })
+      .receive("error", function(resp) {
+
+      })
 
       function goBack() {
         errValue.value = ""
@@ -32,35 +39,34 @@
           errValue.value = "must supply all fields";
           return;
         }
-       // var task = new BusyTask(createBar);
+       
        isBusy.activate();
         errValue.value = '';
-        fetch(`${API_URL}/users`, {
-          method: 'post',
-          mode: 'cors',
-          credentials: 'same-origin',
-          headers: new Headers({'Content-Type': 'application/json'}),
-          body: JSON.stringify({
-            user: {name: name.value, email: email.value, username: username.value, password: password.value}})
 
-        }).
-        then(function(response) {
-          if (response.ok) {
-           // task.done();
-           isBusy.deactivate();
-            return response.json()
-          } else {
-            throw new Error('username already exists')
+       userChannel.push("create:user", {
+            user: {name: name.value, email: email.value, username: username.value, password: password.value}}).
+          receive("ok", function(resp) {
+            isBusy.deactivate();
+          }).
+          receive("error", function(resp) {
+            console.log("User already exist")
+            isBusy.deactivate();
+            errValue.value = resp.errors
+            username.value=""
+            password.value=""
+            email.value = ""
+            name.value = ""
+          })
 
-          }
-        }).
-        then(function(data) {
+      userChannel.on("create:user", function(resp) {
+          isBusy.deactivate();
           name.value = ""
           username.value=""
           password.value=""
           email.value = ""
           errValue.value = ""
           message.value = "Success. Please check your email and verify your account"
+      })
          /*
           Context.accessToken.value = data.data[0].access_token
           var storeObject = {accessToken: data.data[0].access_token}
@@ -72,20 +78,13 @@
           Context.getProducts(task, Context.accessToken.value)
           router.push("home")
           */
-        }).
-        catch(function(error) {
-         // task.done();
-         isBusy.deactivate();
-          errValue.value = error.message
-          username.value=""
-          password.value=""
-          email.value = ""
-          name.value = ""
-        })
+        
+      }
 
-      };
       module.exports = {goBack, errValue, message, createUser, email, username,  password, name}
+
     </JavaScript>
+    
     <DockPanel>
       <DockPanel Dock="Top" Color="#18f" >
         <StatusBarBackground Dock="Top" />

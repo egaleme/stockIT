@@ -98,13 +98,13 @@ function renderDateString(datestring) {
 
 
 
-function createProduct (id, productid,  name, batchno, quantity, expiringdate, price) {
+function createProduct (productid,  name, batchno, quantity, expiringdate, price) {
 
   
   total.value = 0
   var productbb = "BB : "+ renderDateString(expiringdate)
 
-	products.add({id: id, productid: productid, name: name, price: price, bb: productbb, quantity: quantity, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
+	products.add({productid: productid, name: name, price: price, bb: productbb, quantity: quantity, batchno: batchno, expiringdate: renderDateString(expiringdate), expireTracker: expireTracker(expiringdate)})
 
          var storeArray =[];
          products.forEach(function(product) {
@@ -125,6 +125,7 @@ function updateProduct(id, productid, name, batchno, quantity, expiringdate, pri
   for (var i = 0; i < products.length; i++) {
         var product = products.getAt(i);
         if (product.productid == productid) {
+            product.id = id;
             product.name = name;
             product.batchno = batchno;
             product.quantity= quantity;
@@ -169,32 +170,6 @@ function deleteProduct(product) {
 
   totalAmount.value = " Total Inventory Value: =N= "+ total.value.toFixed(2)
 
-}
-
-function logout(accessToken) {
-  totalAmount.value = '';
-  total.value = 0;
-	 fetch(API_URL+'/auth/logout', {
-		method: 'delete',
-		mode: 'cors',
-    headers: new Headers({'Authorization': `Bearer accessToken `}),
-		credentials: 'same-origin'
-	})
-   accessToken.value = '';
-    var tokenObject = {accessToken: accessToken.value};
-
-    Storage.write(SAVENAME, JSON.stringify(tokenObject))
-}
-
-function login(username, password) {
-return fetch(API_URL+'/auth/login', {
-    method: 'post',
-    mode: 'cors',
-    credentials: 'same-origin',
-    headers: new Headers({'Content-Type': 'application/json'}),
-    body: JSON.stringify({
-      user: {username: username, password: password}})
-  })
 }
 
 
@@ -275,9 +250,7 @@ function loadProducts() {
 
 module.exports = {
 	products: products,
-	logout: logout,
 	createProduct: createProduct,
-	login: login,
 	totalAmount: totalAmount,
   getProducts: getProducts,
   updateProduct: updateProduct,
