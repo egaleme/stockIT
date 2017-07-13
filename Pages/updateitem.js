@@ -1,6 +1,5 @@
 var Context = require('Modules/Context');
 var Observable = require('FuseJS/Observable');
-var Storage = require('FuseJS/Storage');
 
 var id = Context.item.map(function(x) {
 	return x.id

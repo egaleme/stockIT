@@ -1,6 +1,6 @@
  var Context = require('Modules/Context');
  var Observable = require('FuseJS/Observable');
- var Storage = require("FuseJS/Storage");
+ var FileSystem = require("FuseJS/FileSystem");
  var Lifecycle = require('FuseJS/Lifecycle');
  var Timer = require('FuseJS/Timer');
 
@@ -64,11 +64,7 @@ function logout() {
   Context.products.clear()
   Context.total.value=0
   Context.totalAmount.clear()
-  Storage.read(Context.SAVENAME).then(function(content) {
-    var data = JSON.parse(content)
-   Storage.deleteSync(Context.SAVENAME);
-   Storage.deleteSync(Context.STOREDATA);
-   })
+  FileSystem.delete(Context.SAVENAME)
   Context.accessToken.clear();
   router.goto('login');
   console.log("logged out");

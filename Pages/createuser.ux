@@ -7,7 +7,6 @@
     <JavaScript>
     var Observable = require("FuseJS/Observable");
     var Context = require("Modules/Context")
-    var Storage = require("FuseJS/Storage")
     var username = Observable();
     var password = Observable();
     var email = Observable();
@@ -67,17 +66,6 @@
           errValue.value = ""
           message.value = "Success. Please check your email and verify your account"
       })
-         /*
-          Context.accessToken.value = data.data[0].access_token
-          var storeObject = {accessToken: data.data[0].access_token}
-          Storage.write(Context.SAVENAME, JSON.stringify(storeObject)).then(function(content) {
-            if (content !== '') {
-              Context.isLoggedIn.value = true
-            }
-          });
-          Context.getProducts(task, Context.accessToken.value)
-          router.push("home")
-          */
         
       }
 
