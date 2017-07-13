@@ -1,4 +1,5 @@
 var Observable = require('FuseJS/Observable');
+var FileSystem = require("FuseJS/FileSystem");
 var Storage = require("FuseJS/Storage");
 var API_URL = require('./api');
 var Socket = require("Lib/phoenix-common").Socket;
@@ -20,9 +21,9 @@ socket.connect();
 
 //var db = sqlite.open(storeData.sqlite);
 
-var SAVENAME = "localStorage.json";
-var STOREDATA = "storeStorage.json";
-var ERRORDATA = "errorStorage.json";
+var SAVENAME = FileSystem.dataDirectory + "/" +"localStorage.json";
+var STOREDATA = FileSystem.dataDirectory + "/" +"storeStorage.json";
+var ERRORDATA = FileSystem.dataDirectory + "/" +"errorStorage.json";
 
 function expireTracker(datestring) {
     var color
