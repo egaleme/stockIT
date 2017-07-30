@@ -56,7 +56,6 @@ accessChannel.on("create", function(data) {
     .receive("error", function(resp) {
       console.log(resp.message)
       isBusy.deactivate();
-      errMessage.value= "please verify email address";
        username.value = ''
        password.value = ''
 
@@ -64,8 +63,8 @@ accessChannel.on("create", function(data) {
 
 })
 
-
 }
+
 
 function goToCreateUser() {
       router.push("createuser")
