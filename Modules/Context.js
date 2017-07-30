@@ -14,7 +14,7 @@ var store = Observable();
 var error = Observable();
 var isLoggedIn = Observable(false);
 
-var socket = new Socket("ws://localhost:4000/socket");
+var socket = new Socket("ws://stockitserver.herokuapp.com//socket");
 
 socket.connect();
 
